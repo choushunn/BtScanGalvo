@@ -1,0 +1,45 @@
+# 编译输出（Keil build 产物）
+MDK-ARM/OCT_CT/
+Debug/
+Release/
+build/
+output/
+Objects/
+Listings/
+
+# 编译器产物
+*.o
+*.d
+*.crf
+*.dep
+*.htm
+*.map
+*.lst
+*.axf
+*.hex
+*.bin
+*.elf
+*.lnp
+*.lgc
+*.sct
+*.build_log.*
+
+# Keil 临时 / 用户文件
+*.uvguix.*
+*.uvopt
+*.uvoptx
+*.warnings
+
+# 调试、日志、临时文件
+*.bak
+*.log
+*.tmp
+plugs/*
+timings/*
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store
