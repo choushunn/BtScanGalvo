@@ -37,7 +37,9 @@ void Scan_Stop(void);                 /* 完全停止，DAC 回中点 */
 void Scan_Pause(void);                /* 暂停（保留点表，不输出） */
 
 void Scan_SetShape(uint8_t shape);    /* SCAN_SHAPE_* */
+void Scan_CycleShape(void);           /* 面板按键：循环切换 圆→正方→长方→圆 */
 void Scan_SetAmplitude(uint8_t percent); /* 0..100 */
+uint8_t Scan_GetAmplitude(void);      /* 当前幅度百分比（面板 +10% 步进用） */
 void Scan_SetIntervalUs(uint32_t us);    /* >=5us */
 
 uint8_t Scan_IsIdle(void);            /* 返回当前是否处于停止/暂停态 */

@@ -341,6 +341,24 @@ void Scan_SetShape(uint8_t shape)
   if (s_running) Scan_HW_Start();
 }
 
+/* 面板循环切换：圆 → 正方 → 长方 → 圆（与蓝牙直选形状互不冲突） */
+void Scan_CycleShape(void)
+{
+  static const uint8_t order[3] = {
+    SCAN_SHAPE_CIRCLE, SCAN_SHAPE_SQUARE, SCAN_SHAPE_RECT
+  };
+  uint8_t i;
+  for (i = 0u; i < 3u; i++)
+  {
+    if (order[i] == s_shape_id)
+    {
+      Scan_SetShape(order[(uint8_t)((i + 1u) % 3u)]);
+      return;
+    }
+  }
+  Scan_SetShape(SCAN_SHAPE_CIRCLE);
+}
+
 void Scan_SetAmplitude(uint8_t percent)
 {
   if (percent > 100u) percent = 100u;
@@ -364,6 +382,11 @@ void Scan_SetIntervalUs(uint32_t us)
 uint8_t Scan_IsIdle(void)
 {
   return (uint8_t)(s_running == 0u);
+}
+
+uint8_t Scan_GetAmplitude(void)
+{
+  return s_amp_pct;
 }
 
 /* ---- 硬件中断回调（TIM6 点步进由生成代码 HAL_TIM_IRQHandler 转入 -> main.c 调本函数；SPI DMA 帧完成） ---- */

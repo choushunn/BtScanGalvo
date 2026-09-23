@@ -109,11 +109,14 @@ static void StartBTTask(void *argument)
 
 /**
   * @brief 扫描控制任务：消费命令队列，安全地驱动扫描模块；
-  *        KEY1/2/3 按键切换形状也在此统一处理（与蓝牙同路径）
+  *        面板三键也在此统一处理（与蓝牙命令同走 scan 模块接口）：
+  *          PD3 短按：循环切换形状（圆→正方→长方→圆）
+  *          PD4 短按：启动 / 停止 切换
+  *          PD5 短按：幅度 +10%（100% 后回到 10%）
   */
 static void StartScanCtrlTask(void *argument)
 {
-  /* 按键上次电平（PD3/PD4/PD5），用于下降沿检测 */
+  /* 按键上次电平（PD3/PD4/PD5），用于下降沿检测；任务 ~10ms 轮询，天然消抖 */
   GPIO_PinState key_prev[3] = {GPIO_PIN_SET, GPIO_PIN_SET, GPIO_PIN_SET};
 
   for(;;)
@@ -148,14 +151,26 @@ static void StartScanCtrlTask(void *argument)
       }
     }
 
-    /* 2) 按键切换形状（KEY1 正方 / KEY2 长方 / KEY3 圆） */
+    /* 2) 面板三键（下降沿触发；~10ms 轮询即消抖） */
     GPIO_PinState k1 = HAL_GPIO_ReadPin(PD3_GPIO_Port, PD3_Pin);
     GPIO_PinState k2 = HAL_GPIO_ReadPin(PD4_GPIO_Port, PD4_Pin);
     GPIO_PinState k3 = HAL_GPIO_ReadPin(PD5_GPIO_Port, PD5_Pin);
 
-    if ((key_prev[0] == GPIO_PIN_SET) && (k1 == GPIO_PIN_RESET)) Scan_SetShape(SCAN_SHAPE_SQUARE);
-    if ((key_prev[1] == GPIO_PIN_SET) && (k2 == GPIO_PIN_RESET)) Scan_SetShape(SCAN_SHAPE_RECT);
-    if ((key_prev[2] == GPIO_PIN_SET) && (k3 == GPIO_PIN_RESET)) Scan_SetShape(SCAN_SHAPE_CIRCLE);
+    if ((key_prev[0] == GPIO_PIN_SET) && (k1 == GPIO_PIN_RESET))
+    {
+      Scan_CycleShape();   /* PD3：圆→正方→长方→圆 */
+    }
+    if ((key_prev[1] == GPIO_PIN_SET) && (k2 == GPIO_PIN_RESET))
+    {
+      if (Scan_IsIdle()) Scan_Start();  /* PD4：停止态 -> 启动 */
+      else               Scan_Stop();   /*       运行态 -> 停止（DAC 回中点） */
+    }
+    if ((key_prev[2] == GPIO_PIN_SET) && (k3 == GPIO_PIN_RESET))
+    {
+      uint8_t amp = (uint8_t)(Scan_GetAmplitude() + 10u);
+      if (amp > 100u) amp = 10u;        /* PD5：10%~100% 循环步进 */
+      Scan_SetAmplitude(amp);
+    }
 
     key_prev[0] = k1;
     key_prev[1] = k2;
