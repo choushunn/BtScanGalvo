@@ -49,6 +49,10 @@ MDK-ARM/DebugConfig/
 # 项目备份
 .cube_backup/
 
+# CubeMX 可重新生成的中间件/驱动
+Drivers/
+Middlewares/
+
 # Trae / IDE 内部
 .trae/
 
