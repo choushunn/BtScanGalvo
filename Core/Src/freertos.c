@@ -1,18 +1,12 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
+  * @file    freertos.c
+  * @brief   FreeRTOS 初始化（由 CubeMX 生成）
   *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
+  *          应用层任务（蓝牙 BTTask / 扫描控制 ScanCtrlTask）与命令队列移入
+  *          自定义文件 app_tasks.c，本文件仅在其 USER CODE 钩子中调用
+  *          App_Tasks_Init()，避免 CubeMX 重新生成时覆盖应用逻辑。
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -25,7 +19,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_tasks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,7 +89,8 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  /* 创建应用任务/队列（BTTask + ScanCtrlTask + CmdQueue） */
+  App_Tasks_Init();
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

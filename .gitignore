@@ -36,6 +36,24 @@ Listings/
 *.tmp
 plugs/*
 timings/*
+MDK-ARM/build_log.txt
+
+# CubeMX 辅助缓存
+.mxproject
+MXTmpFiles/
+
+# Keil 自动生成（RTE / 调试配置）
+MDK-ARM/RTE/
+MDK-ARM/DebugConfig/
+
+# 项目备份
+.cube_backup/
+
+# Trae / IDE 内部
+.trae/
+
+# 临时脚本
+gen.cube
 
 # 编辑器 / 系统
 .vscode/
